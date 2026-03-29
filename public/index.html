@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>微信小程序后台管理系统</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Microsoft YaHei', Arial, sans-serif; background-color: #f5f7fa; }
+    #app { min-height: 100vh; }
+    .login-container { width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    .login-container h2 { text-align: center; margin-bottom: 30px; color: #303133; }
+    .el-header { background-color: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 60px; }
+    .el-aside { width: 200px; background-color: #303133; min-height: calc(100vh - 60px); }
+    .el-menu { border-right: none; background-color: #303133; }
+    .el-menu-item { color: #bfcbd9; }
+    .el-menu-item:hover, .el-menu-item.is-active { background-color: #409EFF !important; color: white !important; }
+    .el-main { padding: 20px; background-color: #f5f7fa; }
+    .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    .stats-card { background: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+    .stats-card .number { font-size: 28px; font-weight: bold; color: #409EFF; margin-bottom: 10px; }
+    .stats-card .label { color: #909399; }
+    .search-form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .pagination { margin-top: 20px; display: flex; justify-content: flex-end; }
+    .image-uploader { border: 2px dashed #d9d9d9; border-radius: 6px; padding: 40px; text-align: center; cursor: pointer; }
+    .image-uploader:hover { border-color: #409EFF; }
+    .image-list { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+    .image-item { position: relative; width: 100px; height: 100px; }
+    .image-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+    .chart-container { width: 100%; height: 400px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.full.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.5.0/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -28,15 +28,16 @@ app.use(logger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 静态文件服务
+// 静态文件服务 - 前端页面
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// 路由
-app.use(routes);
+// API路由
+app.use('/api', routes);
 
-// 测试接口：访问根路径返回欢迎信息
-app.get('/', (req, res) => {
-  res.send('✅ 微信云托管 Express 服务运行成功！');
+// 所有其他路由返回前端页面（支持前端路由）
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // 错误处理中间件
