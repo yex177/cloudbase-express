@@ -7,7 +7,9 @@ const userController = require('../controllers/userController');
 const productController = require('../controllers/productController');
 const mediaController = require('../controllers/mediaController');
 const statsController = require('../controllers/statsController');
-const logisticsController = require('../controllers/logisticsController');
+// ---------------- 临时注释物流控制器 ----------------
+// const logisticsController = require('../controllers/logisticsController');
+// -----------------------------------------------------
 
 // 公共路由
 router.post('/api/auth/login', userController.login);
@@ -36,12 +38,14 @@ router.get('/api/stats/sales', auth, statsController.getSalesStats);
 router.get('/api/stats/export', auth, statsController.exportSalesReport);
 router.get('/api/stats/stock', auth, statsController.getStockStats);
 
-// 物流管理
-router.get('/api/logistics/companies', auth, logisticsController.getLogisticsCompanies);
-router.post('/api/logistics/companies', auth, logisticsController.createLogisticsCompany);
-router.put('/api/logistics/companies/:id', auth, logisticsController.updateLogisticsCompany);
-router.delete('/api/logistics/companies/:id', auth, logisticsController.deleteLogisticsCompany);
-router.put('/api/logistics/orders/:orderId', auth, logisticsController.updateOrderLogistics);
-router.get('/api/logistics/orders/:orderId', auth, logisticsController.queryLogisticsStatus);
+// ---------------- 临时注释物流路由 ----------------
+// // 物流管理
+// router.get('/api/logistics/companies', auth, logisticsController.getLogisticsCompanies);
+// router.post('/api/logistics/companies', auth, logisticsController.createLogisticsCompany);
+// router.put('/api/logistics/companies/:id', auth, logisticsController.updateLogisticsCompany);
+// router.delete('/api/logistics/companies/:id', auth, logisticsController.deleteLogisticsCompany);
+// router.put('/api/logistics/orders/:orderId', auth, logisticsController.updateOrderLogistics);
+// router.get('/api/logistics/orders/:orderId', auth, logisticsController.queryLogisticsStatus);
+// -----------------------------------------------------
 
 module.exports = router;
