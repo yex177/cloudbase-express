@@ -37,10 +37,10 @@ const LoginComponent = {
       <h2>微信小程序后台管理系统</h2>
       <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="User"></el-input>
+          <el-input v-model="loginForm.username" placeholder="请输入用户名"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input type="password" v-model="loginForm.password" placeholder="请输入密码" prefix-icon="Lock"></el-input>
+          <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-button type="primary" @click="handleLogin" :loading="loading" style="width: 100%; margin-top: 20px;">登录</el-button>
       </el-form>
@@ -309,8 +309,8 @@ const MediaComponent = {
       <h2 style="margin-bottom: 20px;">媒体管理</h2>
       <div class="card">
         <div class="image-uploader" @click="triggerUpload">
-          <el-icon :size="40" color="#909399"><Plus /></el-icon>
-          <div style="color: #909399; margin-top: 10px;">点击上传图片</div>
+          <div style="font-size: 40px; color: #909399; margin-bottom: 10px;">+</div>
+          <div style="color: #909399;">点击上传图片</div>
         </div>
         <input type="file" ref="fileInput" multiple accept="image/*" @change="handleFileChange" style="display: none;">
       </div>
@@ -452,61 +452,18 @@ const LogisticsComponent = {
 // 主应用
 const App = {
   template: `
-    <div v-if="!isLoggedIn"><LoginComponent /></div>
-    <div v-else>
-      <el-container style="height: 100vh;">
-        <el-header>
-          <div style="font-size: 18px; font-weight: bold;">微信小程序后台管理系统</div>
-          <div style="display: flex; align-items: center; gap: 15px;">
-            <span>{{ user.username }}</span>
-            <el-button type="danger" size="small" @click="handleLogout">退出</el-button>
-          </div>
-        </el-header>
-        <el-container>
-          <el-aside>
-            <el-menu :default-active="activeMenu" @select="handleMenuSelect" style="height: 100%;">
-              <el-menu-item index="dashboard"><el-icon><HomeFilled /></el-icon><span>仪表盘</span></el-menu-item>
-              <el-menu-item index="products"><el-icon><GoodsFilled /></el-icon><span>产品管理</span></el-menu-item>
-              <el-menu-item index="media"><el-icon><PictureFilled /></el-icon><span>媒体管理</span></el-menu-item>
-              <el-menu-item index="stats"><el-icon><DataAnalysis /></el-icon><span>数据统计</span></el-menu-item>
-              <el-menu-item index="logistics"><el-icon><Van /></el-icon><span>物流管理</span></el-menu-item>
-            </el-menu>
-          </el-aside>
-          <el-main><component :is="currentComponent" /></el-main>
-        </el-container>
-      </el-container>
+    <div>
+      <h1>测试内容</h1>
+      <p>如果看到此内容，说明 Vue 应用初始化成功</p>
     </div>
-  `,
-  components: { LoginComponent, DashboardComponent, ProductComponent, MediaComponent, StatsComponent, LogisticsComponent },
-  setup() {
-    const isLoggedIn = ref(!!localStorage.getItem('token'));
-    const user = ref(JSON.parse(localStorage.getItem('user') || '{}'));
-    const activeMenu = ref('dashboard');
-    const currentComponent = ref('DashboardComponent');
-
-    const menuMap = {
-      dashboard: 'DashboardComponent',
-      products: 'ProductComponent',
-      media: 'MediaComponent',
-      stats: 'StatsComponent',
-      logistics: 'LogisticsComponent'
-    };
-
-    const handleMenuSelect = (key) => {
-      activeMenu.value = key;
-      currentComponent.value = menuMap[key] || 'DashboardComponent';
-    };
-
-    const handleLogout = () => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      isLoggedIn.value = false;
-    };
-
-    return { isLoggedIn, user, activeMenu, currentComponent, handleMenuSelect, handleLogout };
-  }
+  `
 };
 
 const app = createApp(App);
 app.use(ElementPlus);
 app.mount('#app');
+
+// 测试代码
+console.log('Vue 应用初始化');
+console.log('App 组件:', App);
+console.log('Vue 实例:', app);

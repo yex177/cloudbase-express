@@ -7,7 +7,9 @@ const userController = require('../controllers/userController');
 const productController = require('../controllers/productController');
 const mediaController = require('../controllers/mediaController');
 const statsController = require('../controllers/statsController');
-const logisticsController = require('../controllers/logisticsController');
+// ---------------- 临时注释物流控制器 ----------------
+// const logisticsController = require('../controllers/logisticsController');
+// -----------------------------------------------------
 
 // 公共路由
 router.post('/auth/login', userController.login);
@@ -36,6 +38,7 @@ router.get('/stats/sales', auth, statsController.getSalesStats);
 router.get('/stats/export', auth, statsController.exportSalesReport);
 router.get('/stats/stock', auth, statsController.getStockStats);
 
+<<<<<<< HEAD
 // 物流管理
 router.get('/logistics/companies', auth, logisticsController.getLogisticsCompanies);
 router.post('/logistics/companies', auth, logisticsController.createLogisticsCompany);
@@ -43,5 +46,16 @@ router.put('/logistics/companies/:id', auth, logisticsController.updateLogistics
 router.delete('/logistics/companies/:id', auth, logisticsController.deleteLogisticsCompany);
 router.put('/logistics/orders/:orderId', auth, logisticsController.updateOrderLogistics);
 router.get('/logistics/orders/:orderId', auth, logisticsController.queryLogisticsStatus);
+=======
+// ---------------- 临时注释物流路由 ----------------
+// // 物流管理
+// router.get('/api/logistics/companies', auth, logisticsController.getLogisticsCompanies);
+// router.post('/api/logistics/companies', auth, logisticsController.createLogisticsCompany);
+// router.put('/api/logistics/companies/:id', auth, logisticsController.updateLogisticsCompany);
+// router.delete('/api/logistics/companies/:id', auth, logisticsController.deleteLogisticsCompany);
+// router.put('/api/logistics/orders/:orderId', auth, logisticsController.updateOrderLogistics);
+// router.get('/api/logistics/orders/:orderId', auth, logisticsController.queryLogisticsStatus);
+// -----------------------------------------------------
+>>>>>>> 3b1e05840aea018a49250dba83816aecdc37e8fd
 
 module.exports = router;
