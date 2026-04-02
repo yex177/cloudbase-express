@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>简单测试页面</title>
+</head>
+<body>
+  <h1>简单测试页面</h1>
+  <p id="test">测试内容</p>
+  <button onclick="changeText()">点击修改文本</button>
+  <script>
+    function changeText() {
+      document.getElementById('test').innerText = '文本已修改';
+      console.log('文本已修改');
+    }
+    
+    console.log('简单测试页面加载成功');
+  </script>
+</body>
+</html>

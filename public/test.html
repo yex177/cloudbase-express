@@ -4,18 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>测试页面</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 40px; }
-    .test-container { background: #f0f0f0; padding: 20px; border-radius: 8px; text-align: center; }
-    h1 { color: #409EFF; }
-    p { font-size: 18px; }
-  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.css">
 </head>
 <body>
-  <div class="test-container">
-    <h1>测试页面</h1>
-    <p>如果您看到此页面，说明服务器能够正确提供静态文件。</p>
-    <p>服务器运行正常！</p>
+  <div id="app">
+    <h1>{{ message }}</h1>
+    <el-button type="primary">测试按钮</el-button>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.full.js"></script>
+  <script>
+    const { createApp } = Vue;
+    const { ElButton } = ElementPlus;
+    
+    const app = createApp({
+      data() {
+        return {
+          message: 'Hello Vue!'
+        };
+      }
+    });
+    
+    app.use(ElementPlus);
+    app.mount('#app');
+    
+    console.log('测试页面初始化成功');
+  </script>
 </body>
 </html>

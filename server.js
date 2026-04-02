@@ -1,21 +1,49 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const helmet = require('helmet');
+const path = require('path');
+const config = require('./config');
+const logger = require('./middleware/logger');
+const errorHandler = require('./middleware/errorHandler');
+const routes = require('./routes');
+
 const app = express();
 
-// 静态文件服务
-app.use(express.static('public'));
-
-// 测试路由
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Hello World!' });
+// 数据库连接
+mongoose.connect(config.database.uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('数据库连接成功');
+}).catch(err => {
+  console.error('数据库连接失败:', err);
 });
+
+// 中间件
+app.use(helmet());
+app.use(cors());
+app.use(logger);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// 静态文件服务
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// API路由
+app.use('/api', routes);
 
 // 所有其他路由返回前端页面
 app.get('*', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+// 错误处理中间件
+app.use(errorHandler);
 
 // 启动服务
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log('Server running on port', PORT);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
 });

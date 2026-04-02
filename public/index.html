@@ -4,39 +4,168 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>微信小程序后台管理系统</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.css">
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <!-- Element Plus CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+  <script src="https://unpkg.com/element-plus/dist/index.full.js"></script>
+  <!-- Axios CDN -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <!-- ECharts CDN -->
+  <script src="https://unpkg.com/echarts/dist/echarts.min.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Microsoft YaHei', Arial, sans-serif; background-color: #f5f7fa; }
-    #app { min-height: 100vh; }
-    .login-container { width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-    .login-container h2 { text-align: center; margin-bottom: 30px; color: #303133; }
-    .el-header { background-color: #409EFF; color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 60px; }
-    .el-aside { width: 200px; background-color: #303133; min-height: calc(100vh - 60px); }
-    .el-menu { border-right: none; background-color: #303133; }
-    .el-menu-item { color: #bfcbd9; }
-    .el-menu-item:hover, .el-menu-item.is-active { background-color: #409EFF !important; color: white !important; }
-    .el-main { padding: 20px; background-color: #f5f7fa; }
-    .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-    .stats-card { background: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
-    .stats-card .number { font-size: 28px; font-weight: bold; color: #409EFF; margin-bottom: 10px; }
-    .stats-card .label { color: #909399; }
-    .search-form { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .pagination { margin-top: 20px; display: flex; justify-content: flex-end; }
-    .image-uploader { border: 2px dashed #d9d9d9; border-radius: 6px; padding: 40px; text-align: center; cursor: pointer; }
-    .image-uploader:hover { border-color: #409EFF; }
-    .image-list { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-    .image-item { position: relative; width: 100px; height: 100px; }
-    .image-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
-    .chart-container { width: 100%; height: 400px; margin-top: 20px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+    .app-container {
+      height: 100vh;
+    }
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      height: 60px;
+      background-color: #409EFF;
+      color: white;
+    }
+    .app-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .user-info {
+      margin-right: 20px;
+    }
+    .app-sidebar {
+      width: 200px;
+      background-color: #303133;
+    }
+    .sidebar-menu {
+      height: 100%;
+    }
+    .app-main {
+      padding: 20px;
+      background-color: #f5f7fa;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #303133;
+    }
+    .card {
+      background-color: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .search-form {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+    .pagination {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .stats-row {
+      margin-bottom: 20px;
+    }
+    .stats-card {
+      background-color: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .stats-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-right: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      color: white;
+    }
+    .sales-icon {
+      background-color: #67c23a;
+    }
+    .orders-icon {
+      background-color: #409EFF;
+    }
+    .products-icon {
+      background-color: #e6a23c;
+    }
+    .alert-icon {
+      background-color: #f56c6c;
+    }
+    .stats-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #303133;
+    }
+    .stats-label {
+      font-size: 14px;
+      color: #909399;
+      margin-top: 5px;
+    }
+    .chart-container {
+      margin-top: 20px;
+    }
+    .chart-card {
+      background-color: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .chart {
+      height: 300px;
+    }
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    .login-card {
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 400px;
+    }
+    .login-title {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+    .login-form {
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
   <div id="app"></div>
-  <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.full.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios@1.5.0/dist/axios.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>
