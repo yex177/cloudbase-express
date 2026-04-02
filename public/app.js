@@ -1,6 +1,5 @@
 const { createApp, ref, reactive, computed, onMounted } = Vue;
-const { ElMessage, ElMessageBox, ElLoading } = ElementPlus;
-const { House, Goods, Tickets, DataAnalysis, Van, Plus, Delete, User, Lock } = ElementPlus.ElIcon;
+const { ElMessage, ElMessageBox, ElLoading, ElIcon } = ElementPlus;
 
 // API基础URL - 使用相对路径
 const API_BASE_URL = '';
@@ -39,10 +38,10 @@ const LoginComponent = {
         <h2 class="login-title">微信小程序后台管理系统</h2>
         <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" class="login-form">
           <el-form-item label="用户名" prop="username">
-            <el-input v-model="loginForm.username" placeholder="请输入用户名"><template #prefix><el-icon><User /></el-icon></template></el-input>
+            <el-input v-model="loginForm.username" placeholder="请输入用户名"><template #prefix><el-icon><i class="el-icon-user"></i></el-icon></template></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
-            <el-input v-model="loginForm.password" placeholder="请输入密码"><template #prefix><el-icon><Lock /></el-icon></template></el-input>
+            <el-input v-model="loginForm.password" placeholder="请输入密码"><template #prefix><el-icon><i class="el-icon-lock"></i></el-icon></template></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleLogin" :loading="loading" style="width: 100%;">登录</el-button>
@@ -279,7 +278,7 @@ const ProductComponent = {
                 :on-error="handleImageUploadError"
                 list-type="picture-card"
               >
-                <el-icon><Plus /></el-icon>
+                <el-icon><i class="el-icon-plus"></i></el-icon>
                 <template #default="{ file }">
                   <img :src="file.url" alt="" style="width: 100%; height: 100%;">
                 </template>
@@ -287,7 +286,7 @@ const ProductComponent = {
                   <div class="image-item">
                     <img :src="file.url" alt="" style="width: 100%; height: 100%;">
                     <el-button type="text" size="small" @click.stop="removeImage(file)">
-                      <el-icon><Delete /></el-icon>
+                      <el-icon><i class="el-icon-delete"></i></el-icon>
                     </el-button>
                   </div>
                 </template>
@@ -1070,23 +1069,23 @@ const App = {
           <el-aside class="app-sidebar">
             <el-menu :default-active="activeMenu" @select="handleMenuSelect" class="sidebar-menu">
               <el-menu-item index="dashboard">
-                <el-icon><House /></el-icon>
+                <el-icon><i class="el-icon-house"></i></el-icon>
                 <span>仪表盘</span>
               </el-menu-item>
               <el-menu-item index="products">
-                <el-icon><Goods /></el-icon>
+                <el-icon><i class="el-icon-goods"></i></el-icon>
                 <span>商品管理</span>
               </el-menu-item>
               <el-menu-item index="orders">
-                <el-icon><Tickets /></el-icon>
+                <el-icon><i class="el-icon-tickets"></i></el-icon>
                 <span>订单管理</span>
               </el-menu-item>
               <el-menu-item index="stats">
-                <el-icon><DataAnalysis /></el-icon>
+                <el-icon><i class="el-icon-data-analysis"></i></el-icon>
                 <span>数据统计</span>
               </el-menu-item>
               <el-menu-item index="logistics">
-                <el-icon><Van /></el-icon>
+                <el-icon><i class="el-icon-van"></i></el-icon>
                 <span>物流管理</span>
               </el-menu-item>
             </el-menu>
