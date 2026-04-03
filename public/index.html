@@ -121,7 +121,14 @@
         loginButton.disabled = true;
         
         setTimeout(function() {
-          alert('登录成功');
+          // 验证账号和密码
+          if (username === 'yex177' && password === '15673149779') {
+            alert('登录成功');
+            // 登录成功后可以跳转到后台管理页面
+            // 这里可以添加页面跳转逻辑
+          } else {
+            alert('用户名或密码错误');
+          }
           loginButton.disabled = false;
         }, 1000);
       });
