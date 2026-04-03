@@ -30,12 +30,56 @@
       font-size: 18px;
       font-weight: bold;
     }
-    .app-main {
+    .user-info {
+      display: flex;
+      align-items: center;
+    }
+    .user-name {
+      margin-right: 15px;
+    }
+    .logout-btn {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .logout-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .main-container {
+      flex: 1;
+      display: flex;
+    }
+    .sidebar {
+      width: 200px;
+      background-color: #303133;
+      color: white;
+    }
+    .sidebar-item {
+      padding: 15px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid #4e4e4e;
+    }
+    .sidebar-item:hover {
+      background-color: #409EFF;
+    }
+    .sidebar-item.active {
+      background-color: #409EFF;
+    }
+    .content {
       flex: 1;
       padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background-color: #f0f0f0;
+      overflow-y: auto;
+    }
+    .content-area {
+      flex: 1;
+      padding: 20px;
+      background-color: #f0f0f0;
+      overflow-y: auto;
     }
     .login-container {
       background-color: white;
@@ -65,7 +109,6 @@
       font-size: 16px;
     }
     button {
-      width: 100%;
       padding: 10px;
       background-color: #409EFF;
       color: white;
@@ -81,13 +124,91 @@
       background-color: #c0c4cc;
       cursor: not-allowed;
     }
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #409EFF;
+      margin-bottom: 5px;
+    }
+    .stat-label {
+      color: #666;
+      font-size: 14px;
+    }
+    .table-container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background-color: #f5f7fa;
+      font-weight: bold;
+      color: #333;
+    }
+    tr:hover {
+      background-color: #f5f7fa;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .edit-btn {
+      background-color: #67C23A;
+    }
+    .delete-btn {
+      background-color: #F56C6C;
+    }
+    .add-btn {
+      margin-bottom: 20px;
+    }
+    .form-container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
   <div id="app"></div>
   <script>
-    // 基本Vue 3应用
-    const { createApp, ref, reactive } = Vue;
+    // 完整的Vue 3应用
+    const { createApp, ref, reactive, computed } = Vue;
 
     // 登录组件
     const LoginComponent = {
@@ -107,7 +228,7 @@
           </form>
         </div>
       `,
-      setup() {
+      setup(props, { emit }) {
         const loginForm = reactive({
           username: '',
           password: ''
@@ -121,7 +242,7 @@
             console.log('登录请求:', loginForm);
             // 模拟登录成功
             setTimeout(() => {
-              alert('登录成功');
+              emit('login-success');
               loading.value = false;
             }, 1000);
           } catch (error) {
@@ -134,19 +255,425 @@
       }
     };
 
+    // 仪表盘组件
+    const DashboardComponent = {
+      template: `
+        <div class="content">
+          <div class="card">
+            <div class="card-title">仪表盘</div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number">{{ stats.totalProducts }}</div>
+                <div class="stat-label">商品总数</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">{{ stats.totalOrders }}</div>
+                <div class="stat-label">订单总数</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">{{ stats.totalUsers }}</div>
+                <div class="stat-label">用户总数</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">¥{{ stats.totalSales }}</div>
+                <div class="stat-label">总销售额</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">最近订单</div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>订单编号</th>
+                    <th>用户</th>
+                    <th>金额</th>
+                    <th>状态</th>
+                    <th>时间</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="order in recentOrders" :key="order.id">
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.user }}</td>
+                    <td>¥{{ order.amount }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.time }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        // 模拟数据
+        const stats = reactive({
+          totalProducts: 128,
+          totalOrders: 356,
+          totalUsers: 2341,
+          totalSales: 128500
+        });
+
+        const recentOrders = reactive([
+          { id: 'ORD20260403001', user: '张三', amount: 299, status: '已完成', time: '2026-04-03 14:30' },
+          { id: 'ORD20260403002', user: '李四', amount: 159, status: '处理中', time: '2026-04-03 13:45' },
+          { id: 'ORD20260403003', user: '王五', amount: 89, status: '已完成', time: '2026-04-03 12:20' },
+          { id: 'ORD20260403004', user: '赵六', amount: 399, status: '待支付', time: '2026-04-03 11:15' },
+          { id: 'ORD20260403005', user: '孙七', amount: 129, status: '已完成', time: '2026-04-03 10:30' }
+        ]);
+
+        return { stats, recentOrders };
+      }
+    };
+
+    // 商品管理组件
+    const ProductManagementComponent = {
+      template: `
+        <div class="content">
+          <div class="card">
+            <div class="card-title">商品管理</div>
+            <button class="add-btn" @click="showAddForm = true">添加商品</button>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>商品ID</th>
+                    <th>商品名称</th>
+                    <th>价格</th>
+                    <th>库存</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="product in products" :key="product.id">
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>¥{{ product.price }}</td>
+                    <td>{{ product.stock }}</td>
+                    <td>{{ product.status }}</td>
+                    <td>
+                      <div class="action-buttons">
+                        <button class="edit-btn" @click="editProduct(product)">编辑</button>
+                        <button class="delete-btn" @click="deleteProduct(product.id)">删除</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 添加商品表单 -->
+          <div v-if="showAddForm" class="form-container">
+            <div class="card-title">添加商品</div>
+            <form @submit.prevent="addProduct">
+              <div class="form-group">
+                <label for="productName">商品名称</label>
+                <input type="text" id="productName" v-model="newProduct.name" placeholder="请输入商品名称">
+              </div>
+              <div class="form-group">
+                <label for="productPrice">价格</label>
+                <input type="number" id="productPrice" v-model="newProduct.price" placeholder="请输入价格">
+              </div>
+              <div class="form-group">
+                <label for="productStock">库存</label>
+                <input type="number" id="productStock" v-model="newProduct.stock" placeholder="请输入库存">
+              </div>
+              <div class="form-group">
+                <label for="productStatus">状态</label>
+                <input type="text" id="productStatus" v-model="newProduct.status" placeholder="请输入状态">
+              </div>
+              <div class="action-buttons">
+                <button type="submit">保存</button>
+                <button type="button" @click="showAddForm = false">取消</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `,
+      setup() {
+        const products = reactive([
+          { id: 'PROD001', name: 'iPhone 15 Pro', price: 7999, stock: 50, status: '上架' },
+          { id: 'PROD002', name: 'MacBook Pro', price: 14999, stock: 30, status: '上架' },
+          { id: 'PROD003', name: 'iPad Pro', price: 6999, stock: 40, status: '上架' },
+          { id: 'PROD004', name: 'AirPods Pro', price: 1999, stock: 100, status: '上架' },
+          { id: 'PROD005', name: 'Apple Watch', price: 2999, stock: 60, status: '上架' }
+        ]);
+
+        const showAddForm = ref(false);
+        const newProduct = reactive({
+          name: '',
+          price: '',
+          stock: '',
+          status: ''
+        });
+
+        const addProduct = () => {
+          const productId = 'PROD' + String(products.length + 1).padStart(3, '0');
+          products.push({
+            id: productId,
+            ...newProduct
+          });
+          showAddForm.value = false;
+          // 重置表单
+          Object.keys(newProduct).forEach(key => {
+            newProduct[key] = '';
+          });
+        };
+
+        const editProduct = (product) => {
+          console.log('编辑商品:', product);
+          // 这里可以实现编辑功能
+        };
+
+        const deleteProduct = (productId) => {
+          const index = products.findIndex(p => p.id === productId);
+          if (index !== -1) {
+            products.splice(index, 1);
+          }
+        };
+
+        return { products, showAddForm, newProduct, addProduct, editProduct, deleteProduct };
+      }
+    };
+
+    // 订单管理组件
+    const OrderManagementComponent = {
+      template: `
+        <div class="content">
+          <div class="card">
+            <div class="card-title">订单管理</div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>订单编号</th>
+                    <th>用户</th>
+                    <th>金额</th>
+                    <th>状态</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="order in orders" :key="order.id">
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.user }}</td>
+                    <td>¥{{ order.amount }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.time }}</td>
+                    <td>
+                      <div class="action-buttons">
+                        <button class="edit-btn" @click="editOrder(order)">编辑</button>
+                        <button class="delete-btn" @click="deleteOrder(order.id)">删除</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const orders = reactive([
+          { id: 'ORD20260403001', user: '张三', amount: 299, status: '已完成', time: '2026-04-03 14:30' },
+          { id: 'ORD20260403002', user: '李四', amount: 159, status: '处理中', time: '2026-04-03 13:45' },
+          { id: 'ORD20260403003', user: '王五', amount: 89, status: '已完成', time: '2026-04-03 12:20' },
+          { id: 'ORD20260403004', user: '赵六', amount: 399, status: '待支付', time: '2026-04-03 11:15' },
+          { id: 'ORD20260403005', user: '孙七', amount: 129, status: '已完成', time: '2026-04-03 10:30' },
+          { id: 'ORD20260403006', user: '周八', amount: 259, status: '待发货', time: '2026-04-03 09:45' },
+          { id: 'ORD20260403007', user: '吴九', amount: 199, status: '已发货', time: '2026-04-03 08:30' }
+        ]);
+
+        const editOrder = (order) => {
+          console.log('编辑订单:', order);
+          // 这里可以实现编辑功能
+        };
+
+        const deleteOrder = (orderId) => {
+          const index = orders.findIndex(o => o.id === orderId);
+          if (index !== -1) {
+            orders.splice(index, 1);
+          }
+        };
+
+        return { orders, editOrder, deleteOrder };
+      }
+    };
+
+    // 数据统计组件
+    const StatsComponent = {
+      template: `
+        <div class="content">
+          <div class="card">
+            <div class="card-title">数据统计</div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number">{{ stats.totalSales }}</div>
+                <div class="stat-label">总销售额</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">{{ stats.totalOrders }}</div>
+                <div class="stat-label">总订单数</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">{{ stats.avgOrderValue }}</div>
+                <div class="stat-label">平均订单价值</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">{{ stats.conversionRate }}%</div>
+                <div class="stat-label">转化率</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">销售趋势</div>
+            <div style="height: 300px; background-color: #f5f7fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+              <p>销售趋势图表</p>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const stats = reactive({
+          totalSales: 128500,
+          totalOrders: 356,
+          avgOrderValue: 361,
+          conversionRate: 4.2
+        });
+
+        return { stats };
+      }
+    };
+
+    // 物流管理组件
+    const LogisticsComponent = {
+      template: `
+        <div class="content">
+          <div class="card">
+            <div class="card-title">物流管理</div>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>物流单号</th>
+                    <th>订单编号</th>
+                    <th>快递公司</th>
+                    <th>状态</th>
+                    <th>更新时间</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="logistics in logisticsList" :key="logistics.id">
+                    <td>{{ logistics.id }}</td>
+                    <td>{{ logistics.orderId }}</td>
+                    <td>{{ logistics.company }}</td>
+                    <td>{{ logistics.status }}</td>
+                    <td>{{ logistics.updateTime }}</td>
+                    <td>
+                      <div class="action-buttons">
+                        <button class="edit-btn" @click="editLogistics(logistics)">编辑</button>
+                        <button class="delete-btn" @click="deleteLogistics(logistics.id)">删除</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const logisticsList = reactive([
+          { id: 'LOG20260403001', orderId: 'ORD20260403001', company: '顺丰速运', status: '已签收', updateTime: '2026-04-03 14:30' },
+          { id: 'LOG20260403002', orderId: 'ORD20260403002', company: '中通快递', status: '运输中', updateTime: '2026-04-03 13:45' },
+          { id: 'LOG20260403003', orderId: 'ORD20260403003', company: '韵达快递', status: '已签收', updateTime: '2026-04-03 12:20' },
+          { id: 'LOG20260403004', orderId: 'ORD20260403004', company: '申通快递', status: '待发货', updateTime: '2026-04-03 11:15' },
+          { id: 'LOG20260403005', orderId: 'ORD20260403005', company: '圆通快递', status: '已签收', updateTime: '2026-04-03 10:30' }
+        ]);
+
+        const editLogistics = (logistics) => {
+          console.log('编辑物流:', logistics);
+          // 这里可以实现编辑功能
+        };
+
+        const deleteLogistics = (logisticsId) => {
+          const index = logisticsList.findIndex(l => l.id === logisticsId);
+          if (index !== -1) {
+            logisticsList.splice(index, 1);
+          }
+        };
+
+        return { logisticsList, editLogistics, deleteLogistics };
+      }
+    };
+
     // 主应用
     const App = {
       template: `
         <div class="app-container">
-          <div class="app-header">
-            <div class="app-title">微信小程序后台管理系统</div>
+          <div v-if="!isLoggedIn">
+            <div class="app-header">
+              <div class="app-title">微信小程序后台管理系统</div>
+            </div>
+            <div class="app-main">
+              <LoginComponent @login-success="handleLoginSuccess" />
+            </div>
           </div>
-          <div class="app-main">
-            <LoginComponent />
+          <div v-else>
+            <div class="app-header">
+              <div class="app-title">微信小程序后台管理系统</div>
+              <div class="user-info">
+                <div class="user-name">管理员</div>
+                <button class="logout-btn" @click="handleLogout">退出登录</button>
+              </div>
+            </div>
+            <div class="main-container">
+              <div class="sidebar">
+                <div class="sidebar-item" :class="{ active: activeTab === 'dashboard' }" @click="activeTab = 'dashboard'">仪表盘</div>
+                <div class="sidebar-item" :class="{ active: activeTab === 'products' }" @click="activeTab = 'products'">商品管理</div>
+                <div class="sidebar-item" :class="{ active: activeTab === 'orders' }" @click="activeTab = 'orders'">订单管理</div>
+                <div class="sidebar-item" :class="{ active: activeTab === 'stats' }" @click="activeTab = 'stats'">数据统计</div>
+                <div class="sidebar-item" :class="{ active: activeTab === 'logistics' }" @click="activeTab = 'logistics'">物流管理</div>
+              </div>
+              <div class="content-area">
+                <DashboardComponent v-if="activeTab === 'dashboard'" />
+                <ProductManagementComponent v-else-if="activeTab === 'products'" />
+                <OrderManagementComponent v-else-if="activeTab === 'orders'" />
+                <StatsComponent v-else-if="activeTab === 'stats'" />
+                <LogisticsComponent v-else-if="activeTab === 'logistics'" />
+              </div>
+            </div>
           </div>
         </div>
       `,
-      components: { LoginComponent }
+      components: {
+        LoginComponent,
+        DashboardComponent,
+        ProductManagementComponent,
+        OrderManagementComponent,
+        StatsComponent,
+        LogisticsComponent
+      },
+      setup() {
+        const isLoggedIn = ref(false);
+        const activeTab = ref('dashboard');
+
+        const handleLoginSuccess = () => {
+          isLoggedIn.value = true;
+        };
+
+        const handleLogout = () => {
+          isLoggedIn.value = false;
+        };
+
+        return { isLoggedIn, activeTab, handleLoginSuccess, handleLogout };
+      }
     };
 
     const app = createApp(App);
