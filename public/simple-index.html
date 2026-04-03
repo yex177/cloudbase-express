@@ -4,87 +4,73 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>微信小程序后台管理系统</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.css">
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Microsoft YaHei', Arial, sans-serif; background-color: #f5f7fa; }
-    #app { min-height: 100vh; }
-    
-    /* 登录页面 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
     .login-container {
       display: flex;
-      align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
     }
     .login-card {
-      width: 400px;
-      background: white;
+      background-color: white;
       padding: 40px;
       border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 400px;
     }
     .login-title {
       text-align: center;
+      color: #333;
       margin-bottom: 30px;
-      color: #303133;
-      font-size: 24px;
-      font-weight: bold;
     }
-    .login-form {
-      margin-top: 20px;
-    }
-    .form-item {
+    .form-group {
       margin-bottom: 20px;
     }
-    .form-label {
+    label {
       display: block;
       margin-bottom: 5px;
-      color: #606266;
+      color: #666;
     }
-    .form-input {
+    input {
       width: 100%;
       padding: 10px;
-      border: 1px solid #dcdfe6;
+      border: 1px solid #ddd;
       border-radius: 4px;
-      font-size: 14px;
+      font-size: 16px;
     }
-    .form-button {
+    button {
       width: 100%;
       padding: 10px;
       background-color: #409EFF;
       color: white;
       border: none;
       border-radius: 4px;
-      font-size: 14px;
+      font-size: 16px;
       cursor: pointer;
     }
-    .form-button:hover {
+    button:hover {
       background-color: #66b1ff;
+    }
+    button:disabled {
+      background-color: #c0c4cc;
+      cursor: not-allowed;
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <div class="login-container">
-      <div class="login-card">
-        <h2 class="login-title">微信小程序后台管理系统</h2>
-        <form class="login-form">
-          <div class="form-item">
-            <label class="form-label">用户名</label>
-            <input type="text" class="form-input" placeholder="请输入用户名">
-          </div>
-          <div class="form-item">
-            <label class="form-label">密码</label>
-            <input type="password" class="form-input" placeholder="请输入密码">
-          </div>
-          <div class="form-item">
-            <button type="button" class="form-button">登录</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+  <div id="app"></div>
+  <script src="/simple-app.js"></script>
 </body>
 </html>

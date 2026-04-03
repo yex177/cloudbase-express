@@ -4,31 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>测试页面</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.css">
 </head>
 <body>
-  <div id="app">
-    <h1>{{ message }}</h1>
-    <el-button type="primary">测试按钮</el-button>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.full.js"></script>
+  <h1>测试页面</h1>
+  <p>如果您能看到这个页面，说明服务器运行正常。</p>
+  <p>当前时间: <span id="time"></span></p>
   <script>
-    const { createApp } = Vue;
-    const { ElButton } = ElementPlus;
-    
-    const app = createApp({
-      data() {
-        return {
-          message: 'Hello Vue!'
-        };
-      }
-    });
-    
-    app.use(ElementPlus);
-    app.mount('#app');
-    
-    console.log('测试页面初始化成功');
+    document.getElementById('time').textContent = new Date().toLocaleString();
   </script>
 </body>
 </html>
