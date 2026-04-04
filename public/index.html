@@ -149,9 +149,21 @@
             if (username === 'yex177' && password === '15673149779') {
               log('登录成功，准备跳转到dashboard.html');
               log('当前URL:', window.location.href);
-              log('跳转目标:', window.location.href.replace('index.html', 'dashboard.html'));
-              // 登录成功后跳转到后台管理页面
-              window.location.href = 'dashboard.html';
+              
+              // 尝试使用不同的跳转方式
+              const baseUrl = window.location.origin;
+              const dashboardUrl = baseUrl + '/dashboard.html';
+              log('跳转目标:', dashboardUrl);
+              
+              // 方法1：直接跳转
+              log('尝试方法1：直接跳转');
+              window.location.href = dashboardUrl;
+              
+              // 方法2：如果方法1失败，使用replace方法
+              setTimeout(function() {
+                log('方法1可能失败，尝试方法2：使用replace方法');
+                window.location.replace(dashboardUrl);
+              }, 1000);
             } else {
               log('登录失败，用户名或密码错误');
               // 显示错误提示
