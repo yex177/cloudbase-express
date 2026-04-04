@@ -54,10 +54,6 @@
       flex: 1;
       display: flex;
     }
-    .dashboard-container {
-      display: flex;
-      width: 100%;
-    }
     .login-container {
       background-color: white;
       border-radius: 10px;
@@ -284,7 +280,7 @@
     </div>
     <div class="app-main">
       <!-- 登录页面 -->
-      <div id="loginPage">
+      <div id="loginPage" style="width: 100%; display: flex;">
         <div class="login-container">
           <h2 class="login-title">微信小程序后台管理系统</h2>
           <div id="error-message" style="color: red; margin-bottom: 20px; display: none;"></div>
@@ -303,13 +299,13 @@
       </div>
       
       <!-- 后台管理页面 -->
-      <div id="dashboardPage" class="dashboard-container" style="display: none;">
+      <div id="dashboardPage" style="display: none; width: 100%;">
         <div class="sidebar">
-          <div class="sidebar-item active" onclick="switchTab('dashboard', event)">仪表盘</div>
-          <div class="sidebar-item" onclick="switchTab('products', event)">商品管理</div>
-          <div class="sidebar-item" onclick="switchTab('orders', event)">订单管理</div>
-          <div class="sidebar-item" onclick="switchTab('stats', event)">数据统计</div>
-          <div class="sidebar-item" onclick="switchTab('logistics', event)">物流管理</div>
+          <div class="sidebar-item active" onclick="switchTab('dashboard')">仪表盘</div>
+          <div class="sidebar-item" onclick="switchTab('products')">商品管理</div>
+          <div class="sidebar-item" onclick="switchTab('orders')">订单管理</div>
+          <div class="sidebar-item" onclick="switchTab('stats')">数据统计</div>
+          <div class="sidebar-item" onclick="switchTab('logistics')">物流管理</div>
         </div>
         <div class="content" id="content">
           <!-- 仪表盘内容 -->
@@ -755,34 +751,9 @@
     </div>
   </div>
   <script>
-    // 测试日志输出
-    console.log('脚本开始执行');
-    
     // 全局日志函数
     function log(message) {
       console.log('登录系统:', message);
-    }
-
-    // 商品数据存储
-    let products = [];
-    
-    // 当前编辑的商品ID
-    let currentEditId = null;
-    
-    // 从后端API获取商品数据
-    async function loadProductsFromAPI() {
-      try {
-        const response = await fetch('/api/products');
-        const data = await response.json();
-        if (data.code === 0) {
-          products = data.data.products || [];
-          refreshProductTable();
-        } else {
-          console.error('获取商品数据失败:', data.message);
-        }
-      } catch (error) {
-        console.error('获取商品数据错误:', error);
-      }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -834,8 +805,8 @@
               loginPage.style.display = 'none';
               dashboardPage.style.display = 'flex';
               userInfo.style.display = 'flex';
-              // 暂时注释掉加载商品数据，简化登录流程
-              // loadProductsFromAPI();
+              // 加载商品数据
+              loadProductsFromAPI();
             } else {
               log('登录失败，用户名或密码错误');
               // 显示错误提示
@@ -849,29 +820,10 @@
       } else {
         log('登录表单未找到');
       }
-      
-      // 图片预览功能
-      // 为每个图片输入框添加预览功能
-      for (let i = 1; i <= 3; i++) {
-        const productImageInput = document.getElementById('productImage' + i);
-        if (productImageInput) {
-          productImageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = function(e) {
-                document.getElementById('previewImg' + i).src = e.target.result;
-                document.getElementById('imagePreview' + i).style.display = 'block';
-              };
-              reader.readAsDataURL(file);
-            }
-          });
-        }
-      }
     });
 
     // 切换标签页
-    function switchTab(tab, event) {
+    function switchTab(tab) {
       // 隐藏所有内容
       document.getElementById('dashboard-content').style.display = 'none';
       document.getElementById('products-content').style.display = 'none';
@@ -887,9 +839,7 @@
       sidebarItems.forEach(item => {
         item.classList.remove('active');
       });
-      if (event && event.target) {
-        event.target.classList.add('active');
-      }
+      event.target.classList.add('active');
     }
     
     // 退出登录
@@ -899,6 +849,28 @@
       document.getElementById('loginPage').style.display = 'block';
       document.getElementById('dashboardPage').style.display = 'none';
       document.getElementById('userInfo').style.display = 'none';
+    }
+    
+    // 商品数据存储
+    let products = [];
+    
+    // 当前编辑的商品ID
+    let currentEditId = null;
+    
+    // 从后端API获取商品数据
+    async function loadProductsFromAPI() {
+      try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+        if (data.code === 0) {
+          products = data.data.products || [];
+          refreshProductTable();
+        } else {
+          console.error('获取商品数据失败:', data.message);
+        }
+      } catch (error) {
+        console.error('获取商品数据错误:', error);
+      }
     }
     
     // 显示添加商品表单
@@ -958,63 +930,27 @@
         return;
       }
       
-      // 收集图片文件
-      const imageFiles = [];
+      // 收集图片
+      const images = [];
       for (let i = 1; i <= 3; i++) {
-        const fileInput = document.getElementById('productImage' + i);
-        if (fileInput.files && fileInput.files[0]) {
-          imageFiles.push(fileInput.files[0]);
+        const imgSrc = document.getElementById('previewImg' + i).src;
+        if (imgSrc) {
+          images.push(imgSrc);
         }
       }
       
-      // 先上传图片，然后保存商品
-      if (imageFiles.length > 0) {
-        uploadImages(imageFiles).then(imagePaths => {
-          saveProductWithImages(imagePaths);
-        }).catch(error => {
-          console.error('上传图片错误:', error);
-          alert('上传图片失败: ' + error.message);
-        });
-      } else {
-        // 没有图片，直接保存商品
-        saveProductWithImages([]);
-      }
+      const productData = {
+        name: productName,
+        price: productPrice,
+        stock: productStock,
+        status: productStatus,
+        category: productCategory,
+        description: productDescription,
+        images: images
+      };
       
-      function saveProductWithImages(images) {
-        const productData = {
-          name: productName,
-          price: productPrice,
-          stock: productStock,
-          status: productStatus,
-          category: productCategory,
-          description: productDescription,
-          images: images
-        };
-        
-        // 调用后端API保存商品
-        saveProductToAPI(productData);
-      }
-    }
-    
-    // 上传图片到服务器
-    async function uploadImages(imageFiles) {
-      const formData = new FormData();
-      imageFiles.forEach(file => {
-        formData.append('images', file);
-      });
-      
-      const response = await fetch('/api/media/upload', {
-        method: 'POST',
-        body: formData
-      });
-      
-      const data = await response.json();
-      if (data.code === 0) {
-        // 返回图片路径数组
-        return data.data.map(img => img.path);
-      } else {
-        throw new Error(data.message || '上传失败');
-      }
+      // 调用后端API保存商品
+      saveProductToAPI(productData);
     }
     
     // 保存商品到后端API
@@ -1057,6 +993,7 @@
         console.error('保存商品错误:', error);
         alert('保存失败: 网络错误');
       }
+    }
     
     // 同步到小程序前端
     function syncToMiniProgram() {
@@ -1150,7 +1087,26 @@
       }
     }
     
-
+    // 图片预览功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 为每个图片输入框添加预览功能
+      for (let i = 1; i <= 3; i++) {
+        const productImageInput = document.getElementById('productImage' + i);
+        if (productImageInput) {
+          productImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                document.getElementById('previewImg' + i).src = e.target.result;
+                document.getElementById('imagePreview' + i).style.display = 'block';
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        }
+      }
+    });
     
     // 删除商品
     function deleteProduct(productId) {

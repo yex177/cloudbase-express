@@ -27,7 +27,7 @@ router.get('/products/stock/alerts', auth, productController.getStockAlerts);
 router.post('/products/sync', productController.syncProducts);
 
 // 媒体管理
-router.post('/media/upload', mediaController.uploadImage);
+router.post('/media/upload', auth, mediaController.uploadImage);
 router.post('/media/process', auth, mediaController.processImage);
 router.post('/media/delete', auth, mediaController.deleteImage);
 router.get('/media/images', auth, mediaController.getImages);
