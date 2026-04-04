@@ -849,6 +849,25 @@
       } else {
         log('登录表单未找到');
       }
+      
+      // 图片预览功能
+      // 为每个图片输入框添加预览功能
+      for (let i = 1; i <= 3; i++) {
+        const productImageInput = document.getElementById('productImage' + i);
+        if (productImageInput) {
+          productImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                document.getElementById('previewImg' + i).src = e.target.result;
+                document.getElementById('imagePreview' + i).style.display = 'block';
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        }
+      }
     });
 
     // 切换标签页
@@ -1131,26 +1150,7 @@
       }
     }
     
-    // 图片预览功能
-    document.addEventListener('DOMContentLoaded', function() {
-      // 为每个图片输入框添加预览功能
-      for (let i = 1; i <= 3; i++) {
-        const productImageInput = document.getElementById('productImage' + i);
-        if (productImageInput) {
-          productImageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = function(e) {
-                document.getElementById('previewImg' + i).src = e.target.result;
-                document.getElementById('imagePreview' + i).style.display = 'block';
-              };
-              reader.readAsDataURL(file);
-            }
-          });
-        }
-      }
-    });
+
     
     // 删除商品
     function deleteProduct(productId) {
