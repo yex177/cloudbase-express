@@ -104,23 +104,36 @@
     </div>
   </div>
   <script>
+    // 全局日志函数
+    function log(message) {
+      console.log('登录系统:', message);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+      log('DOM加载完成');
+      
       const loginForm = document.getElementById('loginForm');
       const loginButton = document.getElementById('loginButton');
       const usernameInput = document.getElementById('username');
       const passwordInput = document.getElementById('password');
       const errorMessage = document.getElementById('error-message');
 
-      console.log('DOM加载完成，登录表单初始化');
+      log('登录表单初始化');
+      log('loginForm:', loginForm);
+      log('loginButton:', loginButton);
+      log('usernameInput:', usernameInput);
+      log('passwordInput:', passwordInput);
+      log('errorMessage:', errorMessage);
 
       if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
+          log('表单提交事件触发');
           e.preventDefault();
           
           const username = usernameInput.value;
           const password = passwordInput.value;
           
-          console.log('登录请求:', { username, password });
+          log('登录请求:', { username, password });
           
           // 清空之前的错误信息
           errorMessage.style.display = 'none';
@@ -131,14 +144,16 @@
           loginButton.textContent = '登录中...';
           
           setTimeout(function() {
-            console.log('验证账号和密码');
+            log('验证账号和密码');
             // 验证账号和密码
             if (username === 'yex177' && password === '15673149779') {
-              console.log('登录成功，准备跳转到dashboard.html');
+              log('登录成功，准备跳转到dashboard.html');
+              log('当前URL:', window.location.href);
+              log('跳转目标:', window.location.href.replace('index.html', 'dashboard.html'));
               // 登录成功后跳转到后台管理页面
-              window.location.href = '/dashboard.html';
+              window.location.href = 'dashboard.html';
             } else {
-              console.log('登录失败，用户名或密码错误');
+              log('登录失败，用户名或密码错误');
               // 显示错误提示
               errorMessage.textContent = '用户名或密码错误，请重新输入';
               errorMessage.style.display = 'block';
@@ -148,7 +163,7 @@
           }, 1000);
         });
       } else {
-        console.error('登录表单未找到');
+        log('登录表单未找到');
       }
     });
   </script>
