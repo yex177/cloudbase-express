@@ -503,10 +503,22 @@
                   <textarea id="productDescription" placeholder="请输入商品描述" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; resize: vertical;"></textarea>
                 </div>
                 <div class="form-group">
-                  <label for="productImage">商品图片</label>
-                  <input type="file" id="productImage" accept="image/*" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                  <div id="imagePreview" style="margin-top: 10px; max-width: 200px; max-height: 200px; display: none;">
-                    <img id="previewImg" src="" alt="预览" style="max-width: 100%; max-height: 100%; border-radius: 4px;">
+                  <label>商品图片（最多3张）</label>
+                  <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="file" id="productImage1" accept="image/*" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <input type="file" id="productImage2" accept="image/*" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <input type="file" id="productImage3" accept="image/*" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                  </div>
+                  <div id="imagePreview" style="margin-top: 10px; display: flex; gap: 10px;">
+                    <div id="imagePreview1" style="max-width: 150px; max-height: 150px; display: none;">
+                      <img id="previewImg1" src="" alt="预览1" style="max-width: 100%; max-height: 100%; border-radius: 4px;">
+                    </div>
+                    <div id="imagePreview2" style="max-width: 150px; max-height: 150px; display: none;">
+                      <img id="previewImg2" src="" alt="预览2" style="max-width: 100%; max-height: 100%; border-radius: 4px;">
+                    </div>
+                    <div id="imagePreview3" style="max-width: 150px; max-height: 150px; display: none;">
+                      <img id="previewImg3" src="" alt="预览3" style="max-width: 100%; max-height: 100%; border-radius: 4px;">
+                    </div>
                   </div>
                 </div>
                 <div class="action-buttons">
@@ -828,11 +840,11 @@
     
     // 商品数据存储
     let products = [
-      { id: 'PROD001', name: 'iPhone 15 Pro', price: 7999, stock: 50, status: '上架', description: '最新款iPhone，搭载A17芯片', image: '' },
-      { id: 'PROD002', name: 'MacBook Pro', price: 14999, stock: 30, status: '上架', description: '专业级笔记本电脑，M3芯片', image: '' },
-      { id: 'PROD003', name: 'iPad Pro', price: 6999, stock: 40, status: '上架', description: '高性能平板电脑，适合创作', image: '' },
-      { id: 'PROD004', name: 'AirPods Pro', price: 1999, stock: 100, status: '上架', description: '主动降噪无线耳机', image: '' },
-      { id: 'PROD005', name: 'Apple Watch', price: 2999, stock: 60, status: '上架', description: '智能手表，健康监测', image: '' }
+      { id: 'PROD001', name: 'iPhone 15 Pro', price: 7999, stock: 50, status: '上架', description: '最新款iPhone，搭载A17芯片', images: [] },
+      { id: 'PROD002', name: 'MacBook Pro', price: 14999, stock: 30, status: '上架', description: '专业级笔记本电脑，M3芯片', images: [] },
+      { id: 'PROD003', name: 'iPad Pro', price: 6999, stock: 40, status: '上架', description: '高性能平板电脑，适合创作', images: [] },
+      { id: 'PROD004', name: 'AirPods Pro', price: 1999, stock: 100, status: '上架', description: '主动降噪无线耳机', images: [] },
+      { id: 'PROD005', name: 'Apple Watch', price: 2999, stock: 60, status: '上架', description: '智能手表，健康监测', images: [] }
     ];
     
     // 当前编辑的商品ID
@@ -848,9 +860,16 @@
       document.getElementById('productStock').value = '';
       document.getElementById('productStatus').value = '上架';
       document.getElementById('productDescription').value = '';
-      document.getElementById('productImage').value = '';
-      document.getElementById('imagePreview').style.display = 'none';
-      document.getElementById('previewImg').src = '';
+      // 清空图片输入和预览
+      document.getElementById('productImage1').value = '';
+      document.getElementById('productImage2').value = '';
+      document.getElementById('productImage3').value = '';
+      document.getElementById('imagePreview1').style.display = 'none';
+      document.getElementById('imagePreview2').style.display = 'none';
+      document.getElementById('imagePreview3').style.display = 'none';
+      document.getElementById('previewImg1').src = '';
+      document.getElementById('previewImg2').src = '';
+      document.getElementById('previewImg3').src = '';
       document.getElementById('productFormContainer').style.display = 'block';
     }
     
@@ -882,13 +901,22 @@
         return;
       }
       
+      // 收集图片
+      const images = [];
+      for (let i = 1; i <= 3; i++) {
+        const imgSrc = document.getElementById('previewImg' + i).src;
+        if (imgSrc) {
+          images.push(imgSrc);
+        }
+      }
+      
       const productData = {
         name: productName,
         price: productPrice,
         stock: productStock,
         status: productStatus,
         description: productDescription,
-        image: document.getElementById('previewImg').src || ''
+        images: images
       };
       
       if (currentEditId) {
@@ -906,8 +934,20 @@
       }
       
       console.log('保存商品:', productData);
+      
+      // 同步到小程序前端（模拟）
+      syncToMiniProgram();
+      
       hideProductForm();
       refreshProductTable();
+    }
+    
+    // 同步到小程序前端
+    function syncToMiniProgram() {
+      // 这里模拟同步到小程序前端
+      console.log('同步商品数据到小程序前端...');
+      // 实际项目中，这里应该发送API请求到后端，后端再同步到小程序
+      alert('商品数据已同步到小程序前端');
     }
     
     // 编辑商品
@@ -924,11 +964,20 @@
         document.getElementById('productStatus').value = product.status;
         document.getElementById('productDescription').value = product.description || '';
         
-        if (product.image) {
-          document.getElementById('previewImg').src = product.image;
-          document.getElementById('imagePreview').style.display = 'block';
-        } else {
-          document.getElementById('imagePreview').style.display = 'none';
+        // 清空图片预览
+        for (let i = 1; i <= 3; i++) {
+          document.getElementById('imagePreview' + i).style.display = 'none';
+          document.getElementById('previewImg' + i).src = '';
+        }
+        
+        // 显示已有的图片
+        if (product.images && product.images.length > 0) {
+          product.images.forEach((image, index) => {
+            if (index < 3) {
+              document.getElementById('previewImg' + (index + 1)).src = image;
+              document.getElementById('imagePreview' + (index + 1)).style.display = 'block';
+            }
+          });
         }
         
         document.getElementById('productFormContainer').style.display = 'block';
@@ -959,19 +1008,22 @@
     
     // 图片预览功能
     document.addEventListener('DOMContentLoaded', function() {
-      const productImageInput = document.getElementById('productImage');
-      if (productImageInput) {
-        productImageInput.addEventListener('change', function(e) {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-              document.getElementById('previewImg').src = e.target.result;
-              document.getElementById('imagePreview').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-          }
-        });
+      // 为每个图片输入框添加预览功能
+      for (let i = 1; i <= 3; i++) {
+        const productImageInput = document.getElementById('productImage' + i);
+        if (productImageInput) {
+          productImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                document.getElementById('previewImg' + i).src = e.target.result;
+                document.getElementById('imagePreview' + i).style.display = 'block';
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        }
       }
     });
     
