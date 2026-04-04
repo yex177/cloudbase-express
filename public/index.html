@@ -805,6 +805,8 @@
               loginPage.style.display = 'none';
               dashboardPage.style.display = 'flex';
               userInfo.style.display = 'flex';
+              // 加载商品数据
+              loadProductsFromAPI();
             } else {
               log('登录失败，用户名或密码错误');
               // 显示错误提示
@@ -850,16 +852,26 @@
     }
     
     // 商品数据存储
-    let products = [
-      { id: 'PROD001', name: 'iPhone 15 Pro', price: 7999, stock: 50, status: '上架', description: '最新款iPhone，搭载A17芯片', images: [], category: '水晶手串' },
-      { id: 'PROD002', name: 'MacBook Pro', price: 14999, stock: 30, status: '上架', description: '专业级笔记本电脑，M3芯片', images: [], category: '玉石手串' },
-      { id: 'PROD003', name: 'iPad Pro', price: 6999, stock: 40, status: '上架', description: '高性能平板电脑，适合创作', images: [], category: '木质手串' },
-      { id: 'PROD004', name: 'AirPods Pro', price: 1999, stock: 100, status: '上架', description: '主动降噪无线耳机', images: [], category: '金属手串' },
-      { id: 'PROD005', name: 'Apple Watch', price: 2999, stock: 60, status: '上架', description: '智能手表，健康监测', images: [], category: '项链吊坠' }
-    ];
+    let products = [];
     
     // 当前编辑的商品ID
     let currentEditId = null;
+    
+    // 从后端API获取商品数据
+    async function loadProductsFromAPI() {
+      try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+        if (data.code === 0) {
+          products = data.data.products || [];
+          refreshProductTable();
+        } else {
+          console.error('获取商品数据失败:', data.message);
+        }
+      } catch (error) {
+        console.error('获取商品数据错误:', error);
+      }
+    }
     
     // 显示添加商品表单
     function showAddProductForm() {
@@ -918,47 +930,105 @@
         return;
       }
       
-      // 收集图片
-      const images = [];
+      // 收集图片文件
+      const imageFiles = [];
       for (let i = 1; i <= 3; i++) {
-        const imgSrc = document.getElementById('previewImg' + i).src;
-        if (imgSrc) {
-          images.push(imgSrc);
+        const fileInput = document.getElementById('productImage' + i);
+        if (fileInput.files && fileInput.files[0]) {
+          imageFiles.push(fileInput.files[0]);
         }
       }
       
-      const productData = {
-        name: productName,
-        price: productPrice,
-        stock: productStock,
-        status: productStatus,
-        category: productCategory,
-        description: productDescription,
-        images: images
-      };
-      
-      if (currentEditId) {
-        // 编辑现有商品
-        const index = products.findIndex(p => p.id === currentEditId);
-        if (index !== -1) {
-          products[index] = { ...products[index], ...productData };
-          alert('商品更新成功');
-        }
+      // 先上传图片，然后保存商品
+      if (imageFiles.length > 0) {
+        uploadImages(imageFiles).then(imagePaths => {
+          saveProductWithImages(imagePaths);
+        }).catch(error => {
+          console.error('上传图片错误:', error);
+          alert('上传图片失败: ' + error.message);
+        });
       } else {
-        // 添加新商品
-        const newId = 'PROD' + String(products.length + 1).padStart(3, '0');
-        products.push({ id: newId, ...productData });
-        alert('商品添加成功');
+        // 没有图片，直接保存商品
+        saveProductWithImages([]);
       }
       
-      console.log('保存商品:', productData);
-      
-      // 同步到小程序前端（模拟）
-      syncToMiniProgram();
-      
-      hideProductForm();
-      refreshProductTable();
+      function saveProductWithImages(images) {
+        const productData = {
+          name: productName,
+          price: productPrice,
+          stock: productStock,
+          status: productStatus,
+          category: productCategory,
+          description: productDescription,
+          images: images
+        };
+        
+        // 调用后端API保存商品
+        saveProductToAPI(productData);
+      }
     }
+    
+    // 上传图片到服务器
+    async function uploadImages(imageFiles) {
+      const formData = new FormData();
+      imageFiles.forEach(file => {
+        formData.append('images', file);
+      });
+      
+      const response = await fetch('/api/media/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      if (data.code === 0) {
+        // 返回图片路径数组
+        return data.data.map(img => img.path);
+      } else {
+        throw new Error(data.message || '上传失败');
+      }
+    }
+    
+    // 保存商品到后端API
+    async function saveProductToAPI(productData) {
+      try {
+        let url = '/api/products';
+        let method = 'POST';
+        
+        if (currentEditId) {
+          // 编辑现有商品
+          url = `/api/products/${currentEditId}`;
+          method = 'PUT';
+        }
+        
+        const response = await fetch(url, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(productData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.code === 0) {
+          alert(currentEditId ? '商品更新成功' : '商品添加成功');
+          console.log('保存商品:', productData);
+          
+          // 同步到小程序前端
+          syncToMiniProgram();
+          
+          // 重新加载商品数据
+          await loadProductsFromAPI();
+          
+          hideProductForm();
+        } else {
+          alert('保存失败: ' + (data.message || '未知错误'));
+        }
+      } catch (error) {
+        console.error('保存商品错误:', error);
+        alert('保存失败: 网络错误');
+      }
     
     // 同步到小程序前端
     function syncToMiniProgram() {
@@ -976,7 +1046,7 @@
       .then(response => response.json())
       .then(data => {
         console.log('同步结果:', data);
-        if (data.success) {
+        if (data.code === 0 || data.success) {
           alert('商品数据已成功同步到小程序前端');
         } else {
           alert('同步失败: ' + (data.message || '未知错误'));
@@ -991,11 +1061,13 @@
     // 编辑商品
     function editProduct(productId) {
       console.log('编辑商品:', productId);
-      const product = products.find(p => p.id === productId);
+      // 支持 id 或 _id 字段
+      const product = products.find(p => p.id === productId || p._id === productId);
       if (product) {
-        currentEditId = productId;
+        // 使用 _id 或 id 作为当前编辑ID
+        currentEditId = product._id || product.id;
         document.getElementById('formTitle').textContent = '编辑商品';
-        document.getElementById('productId').value = product.id;
+        document.getElementById('productId').value = product.id || product._id;
         document.getElementById('productName').value = product.name;
         document.getElementById('productPrice').value = product.price;
         document.getElementById('productStock').value = product.stock;
@@ -1027,9 +1099,13 @@
     function refreshProductTable() {
       const tbody = document.querySelector('#products-content table tbody');
       if (tbody) {
-        tbody.innerHTML = products.map(product => `
+        tbody.innerHTML = products.map(product => {
+          // 使用 _id 或 id 字段
+          const productId = product._id || product.id;
+          const displayId = product.id || product._id;
+          return `
           <tr>
-            <td>${product.id}</td>
+            <td>${displayId}</td>
             <td>${product.name}</td>
             <td>¥${product.price}</td>
             <td>${product.stock}</td>
@@ -1037,12 +1113,12 @@
             <td>${product.status}</td>
             <td>
               <div class="action-buttons">
-                <button class="edit-btn" onclick="editProduct('${product.id}')">编辑</button>
-                <button class="delete-btn" onclick="deleteProduct('${product.id}')">删除</button>
+                <button class="edit-btn" onclick="editProduct('${productId}')">编辑</button>
+                <button class="delete-btn" onclick="deleteProduct('${productId}')">删除</button>
               </div>
             </td>
           </tr>
-        `).join('');
+        `}).join('');
       }
     }
     
@@ -1071,12 +1147,32 @@
     function deleteProduct(productId) {
       console.log('删除商品:', productId);
       if (confirm('确定要删除商品 ' + productId + ' 吗？')) {
-        const index = products.findIndex(p => p.id === productId);
-        if (index !== -1) {
-          products.splice(index, 1);
+        deleteProductFromAPI(productId);
+      }
+    }
+    
+    // 从后端API删除商品
+    async function deleteProductFromAPI(productId) {
+      try {
+        const response = await fetch(`/api/products/${productId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (data.code === 0) {
           alert('商品删除成功');
-          refreshProductTable();
+          // 重新加载商品数据
+          await loadProductsFromAPI();
+        } else {
+          alert('删除失败: ' + (data.message || '未知错误'));
         }
+      } catch (error) {
+        console.error('删除商品错误:', error);
+        alert('删除失败: 网络错误');
       }
     }
     

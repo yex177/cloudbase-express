@@ -17,17 +17,17 @@ router.post('/auth/register', userController.register);
 router.get('/auth/profile', auth, userController.getProfile);
 
 // 产品管理
-router.get('/products', auth, productController.getProducts);
+router.get('/products', productController.getProducts);
 router.get('/products/:id', auth, productController.getProduct);
 router.post('/products', auth, productController.createProduct);
 router.put('/products/:id', auth, productController.updateProduct);
 router.delete('/products/:id', auth, productController.deleteProduct);
 router.post('/products/batch-status', auth, productController.batchUpdateStatus);
 router.get('/products/stock/alerts', auth, productController.getStockAlerts);
-router.post('/products/sync', auth, productController.syncProducts);
+router.post('/products/sync', productController.syncProducts);
 
 // 媒体管理
-router.post('/media/upload', auth, mediaController.uploadImage);
+router.post('/media/upload', mediaController.uploadImage);
 router.post('/media/process', auth, mediaController.processImage);
 router.post('/media/delete', auth, mediaController.deleteImage);
 router.get('/media/images', auth, mediaController.getImages);
