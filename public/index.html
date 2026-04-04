@@ -54,6 +54,10 @@
       flex: 1;
       display: flex;
     }
+    .dashboard-container {
+      display: flex;
+      width: 100%;
+    }
     .login-container {
       background-color: white;
       border-radius: 10px;
@@ -299,7 +303,7 @@
       </div>
       
       <!-- 后台管理页面 -->
-      <div id="dashboardPage" style="display: none; width: 100%;">
+      <div id="dashboardPage" class="dashboard-container" style="display: none;">
         <div class="sidebar">
           <div class="sidebar-item active" onclick="switchTab('dashboard', event)">仪表盘</div>
           <div class="sidebar-item" onclick="switchTab('products', event)">商品管理</div>
