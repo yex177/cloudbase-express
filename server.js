@@ -29,6 +29,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // 静态文件服务
 app.use(express.static(path.join(__dirname, 'public')));
+
+// 添加CSP头，允许内联脚本执行
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';");
+  next();
+});
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API路由
