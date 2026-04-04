@@ -88,6 +88,7 @@
     <div class="app-main">
       <div class="login-container">
         <h2 class="login-title">微信小程序后台管理系统</h2>
+        <div id="error-message" style="color: red; margin-bottom: 20px; display: none;"></div>
         <form id="loginForm">
           <div class="form-group">
             <label for="username">用户名</label>
@@ -108,6 +109,7 @@
       const loginButton = document.getElementById('loginButton');
       const usernameInput = document.getElementById('username');
       const passwordInput = document.getElementById('password');
+      const errorMessage = document.getElementById('error-message');
 
       console.log('DOM加载完成，登录表单初始化');
 
@@ -120,6 +122,10 @@
           
           console.log('登录请求:', { username, password });
           
+          // 清空之前的错误信息
+          errorMessage.style.display = 'none';
+          errorMessage.textContent = '';
+          
           // 模拟登录请求
           loginButton.disabled = true;
           loginButton.textContent = '登录中...';
@@ -129,12 +135,13 @@
             // 验证账号和密码
             if (username === 'yex177' && password === '15673149779') {
               console.log('登录成功，准备跳转到dashboard.html');
-              alert('登录成功');
               // 登录成功后跳转到后台管理页面
               window.location.href = '/dashboard.html';
             } else {
               console.log('登录失败，用户名或密码错误');
-              alert('用户名或密码错误');
+              // 显示错误提示
+              errorMessage.textContent = '用户名或密码错误，请重新输入';
+              errorMessage.style.display = 'block';
             }
             loginButton.disabled = false;
             loginButton.textContent = '登录';
