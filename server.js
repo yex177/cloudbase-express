@@ -21,16 +21,17 @@ mongoose.connect(config.database.uri, {
 });
 
 // 中间件
-// 配置helmet，允许内联脚本执行
+// 禁用helmet的默认CSP，手动设置
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"]
-    }
-  }
+  contentSecurityPolicy: false
 }));
+
+// 添加CSP头，允许内联脚本和样式
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;");
+  next();
+});
+
 app.use(cors());
 app.use(logger);
 app.use(express.json());
