@@ -102,6 +102,26 @@ const productController = {
     } catch (error) {
       res.status(500).json({ code: 500, message: '服务器内部错误' });
     }
+  },
+  
+  // 同步商品到小程序前端
+  async syncProducts(req, res) {
+    try {
+      const productsData = req.body;
+      
+      // 这里可以添加同步逻辑，例如：
+      // 1. 验证数据格式
+      // 2. 更新数据库中的商品数据
+      // 3. 触发小程序端的更新
+      
+      console.log('接收到同步请求，商品数量:', productsData.length);
+      
+      // 模拟同步成功
+      res.json({ code: 0, message: '同步成功', data: { synced: productsData.length } });
+    } catch (error) {
+      console.error('同步错误:', error);
+      res.status(500).json({ code: 500, message: '同步失败' });
+    }
   }
 };
 

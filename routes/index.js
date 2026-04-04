@@ -24,6 +24,7 @@ router.put('/products/:id', auth, productController.updateProduct);
 router.delete('/products/:id', auth, productController.deleteProduct);
 router.post('/products/batch-status', auth, productController.batchUpdateStatus);
 router.get('/products/stock/alerts', auth, productController.getStockAlerts);
+router.post('/products/sync', auth, productController.syncProducts);
 
 // 媒体管理
 router.post('/media/upload', auth, mediaController.uploadImage);
