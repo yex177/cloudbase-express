@@ -214,6 +214,58 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       padding: 20px;
+      margin-top: 20px;
+    }
+    .form-container .form-group {
+      margin-bottom: 15px;
+    }
+    .form-container label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: bold;
+    }
+    .form-container input,
+    .form-container select,
+    .form-container textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .form-container input:focus,
+    .form-container select:focus,
+    .form-container textarea:focus {
+      border-color: #409EFF;
+      outline: none;
+    }
+    .form-container .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .form-container .action-buttons button {
+      flex: 1;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .form-container .action-buttons button:first-child {
+      background-color: #409EFF;
+      color: white;
+    }
+    .form-container .action-buttons button:first-child:hover {
+      background-color: #66b1ff;
+    }
+    .form-container .action-buttons button:last-child {
+      background-color: #909399;
+      color: white;
+    }
+    .form-container .action-buttons button:last-child:hover {
+      background-color: #a6a9ad;
     }
   </style>
 </head>
@@ -422,29 +474,44 @@
               </div>
             </div>
 
-            <!-- 添加商品表单 -->
-            <div id="addProductForm" class="form-container" style="display: none;">
-              <div class="card-title">添加商品</div>
+            <!-- 添加/编辑商品表单 -->
+            <div id="productFormContainer" class="form-container" style="display: none;">
+              <div class="card-title" id="formTitle">添加商品</div>
               <form id="productForm">
+                <input type="hidden" id="productId" value="">
                 <div class="form-group">
-                  <label for="productName">商品名称</label>
-                  <input type="text" id="productName" placeholder="请输入商品名称">
+                  <label for="productName">商品名称 *</label>
+                  <input type="text" id="productName" placeholder="请输入商品名称" required>
                 </div>
                 <div class="form-group">
-                  <label for="productPrice">价格</label>
-                  <input type="number" id="productPrice" placeholder="请输入价格">
+                  <label for="productPrice">价格 *</label>
+                  <input type="number" id="productPrice" placeholder="请输入价格" min="0" step="0.01" required>
                 </div>
                 <div class="form-group">
-                  <label for="productStock">库存</label>
-                  <input type="number" id="productStock" placeholder="请输入库存">
+                  <label for="productStock">库存 *</label>
+                  <input type="number" id="productStock" placeholder="请输入库存" min="0" required>
                 </div>
                 <div class="form-group">
                   <label for="productStatus">状态</label>
-                  <input type="text" id="productStatus" placeholder="请输入状态">
+                  <select id="productStatus" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px;">
+                    <option value="上架">上架</option>
+                    <option value="下架">下架</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="productDescription">商品描述</label>
+                  <textarea id="productDescription" placeholder="请输入商品描述" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; resize: vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="productImage">商品图片</label>
+                  <input type="file" id="productImage" accept="image/*" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                  <div id="imagePreview" style="margin-top: 10px; max-width: 200px; max-height: 200px; display: none;">
+                    <img id="previewImg" src="" alt="预览" style="max-width: 100%; max-height: 100%; border-radius: 4px;">
+                  </div>
                 </div>
                 <div class="action-buttons">
-                  <button type="button" onclick="saveProduct()">保存</button>
-                  <button type="button" onclick="hideAddProductForm()">取消</button>
+                  <button type="button" onclick="saveProduct()" style="margin-right: 10px;">保存</button>
+                  <button type="button" onclick="hideProductForm()">取消</button>
                 </div>
               </form>
             </div>
@@ -759,38 +826,166 @@
       document.getElementById('userInfo').style.display = 'none';
     }
     
+    // 商品数据存储
+    let products = [
+      { id: 'PROD001', name: 'iPhone 15 Pro', price: 7999, stock: 50, status: '上架', description: '最新款iPhone，搭载A17芯片', image: '' },
+      { id: 'PROD002', name: 'MacBook Pro', price: 14999, stock: 30, status: '上架', description: '专业级笔记本电脑，M3芯片', image: '' },
+      { id: 'PROD003', name: 'iPad Pro', price: 6999, stock: 40, status: '上架', description: '高性能平板电脑，适合创作', image: '' },
+      { id: 'PROD004', name: 'AirPods Pro', price: 1999, stock: 100, status: '上架', description: '主动降噪无线耳机', image: '' },
+      { id: 'PROD005', name: 'Apple Watch', price: 2999, stock: 60, status: '上架', description: '智能手表，健康监测', image: '' }
+    ];
+    
+    // 当前编辑的商品ID
+    let currentEditId = null;
+    
     // 显示添加商品表单
     function showAddProductForm() {
-      document.getElementById('addProductForm').style.display = 'block';
+      currentEditId = null;
+      document.getElementById('formTitle').textContent = '添加商品';
+      document.getElementById('productId').value = '';
+      document.getElementById('productName').value = '';
+      document.getElementById('productPrice').value = '';
+      document.getElementById('productStock').value = '';
+      document.getElementById('productStatus').value = '上架';
+      document.getElementById('productDescription').value = '';
+      document.getElementById('productImage').value = '';
+      document.getElementById('imagePreview').style.display = 'none';
+      document.getElementById('previewImg').src = '';
+      document.getElementById('productFormContainer').style.display = 'block';
     }
     
-    // 隐藏添加商品表单
-    function hideAddProductForm() {
-      document.getElementById('addProductForm').style.display = 'none';
+    // 隐藏商品表单
+    function hideProductForm() {
+      document.getElementById('productFormContainer').style.display = 'none';
+      currentEditId = null;
     }
     
     // 保存商品
     function saveProduct() {
-      const productName = document.getElementById('productName').value;
-      const productPrice = document.getElementById('productPrice').value;
-      const productStock = document.getElementById('productStock').value;
+      const productName = document.getElementById('productName').value.trim();
+      const productPrice = parseFloat(document.getElementById('productPrice').value);
+      const productStock = parseInt(document.getElementById('productStock').value);
       const productStatus = document.getElementById('productStatus').value;
+      const productDescription = document.getElementById('productDescription').value.trim();
       
-      console.log('保存商品:', { productName, productPrice, productStock, productStatus });
-      alert('商品保存成功');
-      hideAddProductForm();
+      // 验证必填字段
+      if (!productName) {
+        alert('请输入商品名称');
+        return;
+      }
+      if (isNaN(productPrice) || productPrice < 0) {
+        alert('请输入有效的价格');
+        return;
+      }
+      if (isNaN(productStock) || productStock < 0) {
+        alert('请输入有效的库存数量');
+        return;
+      }
+      
+      const productData = {
+        name: productName,
+        price: productPrice,
+        stock: productStock,
+        status: productStatus,
+        description: productDescription,
+        image: document.getElementById('previewImg').src || ''
+      };
+      
+      if (currentEditId) {
+        // 编辑现有商品
+        const index = products.findIndex(p => p.id === currentEditId);
+        if (index !== -1) {
+          products[index] = { ...products[index], ...productData };
+          alert('商品更新成功');
+        }
+      } else {
+        // 添加新商品
+        const newId = 'PROD' + String(products.length + 1).padStart(3, '0');
+        products.push({ id: newId, ...productData });
+        alert('商品添加成功');
+      }
+      
+      console.log('保存商品:', productData);
+      hideProductForm();
+      refreshProductTable();
     }
     
     // 编辑商品
     function editProduct(productId) {
       console.log('编辑商品:', productId);
-      alert('编辑商品功能待实现');
+      const product = products.find(p => p.id === productId);
+      if (product) {
+        currentEditId = productId;
+        document.getElementById('formTitle').textContent = '编辑商品';
+        document.getElementById('productId').value = product.id;
+        document.getElementById('productName').value = product.name;
+        document.getElementById('productPrice').value = product.price;
+        document.getElementById('productStock').value = product.stock;
+        document.getElementById('productStatus').value = product.status;
+        document.getElementById('productDescription').value = product.description || '';
+        
+        if (product.image) {
+          document.getElementById('previewImg').src = product.image;
+          document.getElementById('imagePreview').style.display = 'block';
+        } else {
+          document.getElementById('imagePreview').style.display = 'none';
+        }
+        
+        document.getElementById('productFormContainer').style.display = 'block';
+      }
     }
+    
+    // 刷新商品表格
+    function refreshProductTable() {
+      const tbody = document.querySelector('#products-content table tbody');
+      if (tbody) {
+        tbody.innerHTML = products.map(product => `
+          <tr>
+            <td>${product.id}</td>
+            <td>${product.name}</td>
+            <td>¥${product.price}</td>
+            <td>${product.stock}</td>
+            <td>${product.status}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="edit-btn" onclick="editProduct('${product.id}')">编辑</button>
+                <button class="delete-btn" onclick="deleteProduct('${product.id}')">删除</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+    
+    // 图片预览功能
+    document.addEventListener('DOMContentLoaded', function() {
+      const productImageInput = document.getElementById('productImage');
+      if (productImageInput) {
+        productImageInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              document.getElementById('previewImg').src = e.target.result;
+              document.getElementById('imagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+    });
     
     // 删除商品
     function deleteProduct(productId) {
       console.log('删除商品:', productId);
-      alert('商品删除成功');
+      if (confirm('确定要删除商品 ' + productId + ' 吗？')) {
+        const index = products.findIndex(p => p.id === productId);
+        if (index !== -1) {
+          products.splice(index, 1);
+          alert('商品删除成功');
+          refreshProductTable();
+        }
+      }
     }
     
     // 编辑订单
